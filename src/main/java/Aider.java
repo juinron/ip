@@ -60,6 +60,22 @@ public class Aider {
                 } catch (NumberFormatException exception) {
                     System.out.println("Please provide a valid task number.");
                 }
+            } else if (command.startsWith("unmark ")) {
+                String taskNumberText = command.substring("unmark ".length()).trim();
+                try {
+                    int taskNumber = Integer.parseInt(taskNumberText);
+                    int taskIndex = taskNumber - 1;
+
+                    if (taskIndex >= 0 && taskIndex < taskCount) {
+                        completed[taskIndex] = false;
+                        System.out.println("OK, I've marked this task as not done yet:");
+                        System.out.println("  [ ] " + tasks[taskIndex]);
+                    } else {
+                        System.out.println("That task number does not exist.");
+                    }
+                } catch (NumberFormatException exception) {
+                    System.out.println("Please provide a valid task number.");
+                }
             } else if (taskCount < MAX_TASKS) {
                 tasks[taskCount] = command;
                 taskCount++;
