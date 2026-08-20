@@ -147,3 +147,40 @@ Commands:
    ```text
    Bye. Hope to see you again soon!
    ```
+
+## Test case: Invalid commands and task descriptions
+
+Aim: Verify that malformed task commands and unknown commands produce helpful errors without terminating the session.
+
+Commands:
+
+1. Input: `todo`
+   Expected output:
+   ```text
+   OOPS!!! A todo needs a description, for example: todo read book.
+   ```
+2. Input: `deadline`
+   Expected output:
+   ```text
+   OOPS!!! A deadline must include a description and a /by date or time.
+   ```
+3. Input: `event project meeting /from Mon 2pm`
+   Expected output:
+   ```text
+   OOPS!!! An event needs a description, /from time, and /to time.
+   ```
+4. Input: `blah`
+   Expected output:
+   ```text
+   OOPS!!! I don't recognize that command. Try todo, deadline, event, list, mark, or unmark.
+   ```
+5. Input: `mark`
+   Expected output:
+   ```text
+   OOPS!!! The mark command needs a task number.
+   ```
+6. Input: `bye`
+   Expected output:
+   ```text
+   Bye. Hope to see you again soon!
+   ```

@@ -28,7 +28,7 @@ public class Aider {
         int taskCount = 0;
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
-            String command = scanner.nextLine();
+            String command = scanner.nextLine().trim();
             System.out.println(SEPARATOR);
 
             if (command.equals("bye")) {
@@ -37,52 +37,36 @@ public class Aider {
                 break;
             }
 
-            if (command.equals("list")) {
-                System.out.println("Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + "." + tasks[i]);
-                }
-            } else if (command.startsWith("mark ")) {
-                String taskNumberText = command.substring("mark ".length()).trim();
-                try {
-                    int taskNumber = Integer.parseInt(taskNumberText);
-                    int taskIndex = taskNumber - 1;
-
-                    if (taskIndex >= 0 && taskIndex < taskCount) {
-                        tasks[taskIndex].markAsDone();
-                        System.out.println("Nice! I've marked this task as done:");
-                        System.out.println("  " + tasks[taskIndex]);
-                    } else {
-                        System.out.println("That task number does not exist.");
+            try {
+                if (command.equals("list")) {
+                    System.out.println("Here are the tasks in your list:");
+                    for (int i = 0; i < taskCount; i++) {
+                        System.out.println((i + 1) + "." + tasks[i]);
                     }
-                } catch (NumberFormatException exception) {
-                    System.out.println("Please provide a valid task number.");
-                }
-            } else if (command.startsWith("unmark ")) {
-                String taskNumberText = command.substring("unmark ".length()).trim();
-                try {
-                    int taskNumber = Integer.parseInt(taskNumberText);
-                    int taskIndex = taskNumber - 1;
-
-                    if (taskIndex >= 0 && taskIndex < taskCount) {
-                        tasks[taskIndex].markAsNotDone();
-                        System.out.println("OK, I've marked this task as not done yet:");
-                        System.out.println("  " + tasks[taskIndex]);
-                    } else {
-                        System.out.println("That task number does not exist.");
+                } else if (command.equals("mark") || command.startsWith("mark ")) {
+                    int taskIndex = getTaskIndex(command, "mark", taskCount);
+                    tasks[taskIndex].markAsDone();
+                    System.out.println("Nice! I've marked this task as done:");
+                    System.out.println("  " + tasks[taskIndex]);
+                } else if (command.equals("unmark") || command.startsWith("unmark ")) {
+                    int taskIndex = getTaskIndex(command, "unmark", taskCount);
+                    tasks[taskIndex].markAsNotDone();
+                    System.out.println("OK, I've marked this task as not done yet:");
+                    System.out.println("  " + tasks[taskIndex]);
+                } else {
+                    if (taskCount >= MAX_TASKS) {
+                        throw new AiderException("Your task list is full.");
                     }
-                } catch (NumberFormatException exception) {
-                    System.out.println("Please provide a valid task number.");
+
+                    Task newTask = createTask(command);
+                    tasks[taskCount] = newTask;
+                    taskCount++;
+                    System.out.println("Got it. I've added this task:");
+                    System.out.println("  " + newTask);
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
                 }
-            } else if (taskCount < MAX_TASKS) {
-                Task newTask = createTask(command);
-                tasks[taskCount] = newTask;
-                taskCount++;
-                System.out.println("Got it. I've added this task:");
-                System.out.println("  " + newTask);
-                System.out.println("Now you have " + taskCount + " tasks in the list.");
-            } else {
-                System.out.println("Task limit reached.");
+            } catch (AiderException exception) {
+                System.out.println("OOPS!!! " + exception.getMessage());
             }
 
             System.out.println(SEPARATOR);
@@ -95,33 +79,77 @@ public class Aider {
      * @param command the complete command entered by the user
      * @return the task represented by the command
      */
-    private static Task createTask(String command) {
-        if (command.startsWith("todo ")) {
-            return new Todo(command.substring("todo ".length()));
-        }
-
-        if (command.startsWith("deadline ")) {
-            String details = command.substring("deadline ".length());
-            int byIndex = details.indexOf(" /by ");
-            if (byIndex >= 0) {
-                String description = details.substring(0, byIndex);
-                String by = details.substring(byIndex + " /by ".length());
-                return new Deadline(description, by);
+    private static Task createTask(String command) throws AiderException {
+        if (command.equals("todo") || command.startsWith("todo ")) {
+            String description = command.substring("todo".length()).trim();
+            if (description.isEmpty()) {
+                throw new AiderException("A todo needs a description, for example: todo read book.");
             }
+            return new Todo(description);
         }
 
-        if (command.startsWith("event ")) {
-            String details = command.substring("event ".length());
+        if (command.equals("deadline") || command.startsWith("deadline ")) {
+            String details = command.substring("deadline".length()).trim();
+            int byIndex = details.indexOf(" /by ");
+            if (byIndex < 0) {
+                throw new AiderException("A deadline must include a description and a /by date or time.");
+            }
+
+            String description = details.substring(0, byIndex).trim();
+            String by = details.substring(byIndex + " /by ".length()).trim();
+            if (description.isEmpty() || by.isEmpty()) {
+                throw new AiderException("A deadline needs a description and a date or time after /by.");
+            }
+            return new Deadline(description, by);
+        }
+
+        if (command.equals("event") || command.startsWith("event ")) {
+            String details = command.substring("event".length()).trim();
             int fromIndex = details.indexOf(" /from ");
             int toIndex = details.indexOf(" /to ");
-            if (fromIndex >= 0 && toIndex > fromIndex) {
-                String description = details.substring(0, fromIndex);
-                String from = details.substring(fromIndex + " /from ".length(), toIndex);
-                String to = details.substring(toIndex + " /to ".length());
-                return new Event(description, from, to);
+            if (fromIndex < 0 || toIndex <= fromIndex) {
+                throw new AiderException("An event needs a description, /from time, and /to time.");
             }
+
+            String description = details.substring(0, fromIndex).trim();
+            String from = details.substring(fromIndex + " /from ".length(), toIndex).trim();
+            String to = details.substring(toIndex + " /to ".length()).trim();
+            if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
+                throw new AiderException("An event needs text after its description, /from, and /to markers.");
+            }
+            return new Event(description, from, to);
         }
 
-        return new Todo(command);
+        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, or unmark.");
+    }
+
+    /**
+     * Parses and validates a task number from a mark or unmark command.
+     *
+     * @param command the complete command entered by the user
+     * @param commandName the command name being parsed
+     * @param taskCount the number of tasks currently stored
+     * @return the zero-based index of the selected task
+     * @throws AiderException if the command does not contain a valid task number
+     */
+    private static int getTaskIndex(String command, String commandName, int taskCount)
+            throws AiderException {
+        String taskNumberText = command.substring(commandName.length()).trim();
+        if (taskNumberText.isEmpty()) {
+            throw new AiderException("The " + commandName + " command needs a task number.");
+        }
+
+        final int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(taskNumberText);
+        } catch (NumberFormatException exception) {
+            throw new AiderException("The " + commandName + " command needs a whole-number task number.");
+        }
+
+        int taskIndex = taskNumber - 1;
+        if (taskIndex < 0 || taskIndex >= taskCount) {
+            throw new AiderException("That task number does not exist.");
+        }
+        return taskIndex;
     }
 }
