@@ -45,4 +45,32 @@ public class Task {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Returns the one-letter icon for this task type.
+     *
+     * @return the task type icon
+     */
+    public String getTypeIcon() {
+        return "T";
+    }
+
+    /**
+     * Returns the description and any type-specific details.
+     *
+     * @return the display details for this task
+     */
+    protected String getTaskDetails() {
+        return description;
+    }
+
+    /**
+     * Returns the task in the format used by the chatbot.
+     *
+     * @return the formatted task
+     */
+    @Override
+    public String toString() {
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + getTaskDetails();
+    }
 }
