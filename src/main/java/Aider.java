@@ -1,12 +1,10 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
  * Entry point for the Aider chatbot application.
  */
 public class Aider {
-    /** Maximum number of tasks that can be stored in memory. */
-    private static final int MAX_TASKS = 100;
-
     /** Separates the chatbot's responses in the console. */
     private static final String SEPARATOR = "____________________________________________________________";
 
@@ -24,8 +22,7 @@ public class Aider {
         System.out.println("What can I do for you?");
         System.out.println(SEPARATOR);
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -40,30 +37,31 @@ public class Aider {
             try {
                 if (command.equals("list")) {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println((i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println((i + 1) + "." + tasks.get(i));
                     }
                 } else if (command.equals("mark") || command.startsWith("mark ")) {
-                    int taskIndex = getTaskIndex(command, "mark", taskCount);
-                    tasks[taskIndex].markAsDone();
+                    int taskIndex = getTaskIndex(command, "mark", tasks.size());
+                    tasks.get(taskIndex).markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
-                    System.out.println("  " + tasks[taskIndex]);
+                    System.out.println("  " + tasks.get(taskIndex));
                 } else if (command.equals("unmark") || command.startsWith("unmark ")) {
-                    int taskIndex = getTaskIndex(command, "unmark", taskCount);
-                    tasks[taskIndex].markAsNotDone();
+                    int taskIndex = getTaskIndex(command, "unmark", tasks.size());
+                    tasks.get(taskIndex).markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println("  " + tasks[taskIndex]);
+                    System.out.println("  " + tasks.get(taskIndex));
+                } else if (command.equals("delete") || command.startsWith("delete ")) {
+                    int taskIndex = getTaskIndex(command, "delete", tasks.size());
+                    Task removedTask = tasks.remove(taskIndex);
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removedTask);
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 } else {
-                    if (taskCount >= MAX_TASKS) {
-                        throw new AiderException("Your task list is full.");
-                    }
-
                     Task newTask = createTask(command);
-                    tasks[taskCount] = newTask;
-                    taskCount++;
+                    tasks.add(newTask);
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + newTask);
-                    System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
                 }
             } catch (AiderException exception) {
                 System.out.println("OOPS!!! " + exception.getMessage());
@@ -120,7 +118,7 @@ public class Aider {
             return new Event(description, from, to);
         }
 
-        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, or unmark.");
+        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or delete.");
     }
 
     /**

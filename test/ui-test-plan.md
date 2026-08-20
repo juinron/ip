@@ -148,6 +148,58 @@ Commands:
    Bye. Hope to see you again soon!
    ```
 
+## Test case: Delete a task
+
+Aim: Verify that `delete N` removes the selected task and renumbers the remaining tasks.
+
+Commands:
+
+1. Input: `todo read book`
+   Expected output:
+   ```text
+   Got it. I've added this task:
+     [T][ ] read book
+   Now you have 1 tasks in the list.
+   ```
+2. Input: `deadline return book /by June 6th`
+   Expected output:
+   ```text
+   Got it. I've added this task:
+     [D][ ] return book (by: June 6th)
+   Now you have 2 tasks in the list.
+   ```
+3. Input: `event project meeting /from Aug 6th 2pm /to 4pm`
+   Expected output:
+   ```text
+   Got it. I've added this task:
+     [E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+   Now you have 3 tasks in the list.
+   ```
+4. Input: `delete 2`
+   Expected output:
+   ```text
+   Noted. I've removed this task:
+     [D][ ] return book (by: June 6th)
+   Now you have 2 tasks in the list.
+   ```
+5. Input: `list`
+   Expected output:
+   ```text
+   Here are the tasks in your list:
+   1.[T][ ] read book
+   2.[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+   ```
+6. Input: `delete`
+   Expected output:
+   ```text
+   OOPS!!! The delete command needs a task number.
+   ```
+7. Input: `bye`
+   Expected output:
+   ```text
+   Bye. Hope to see you again soon!
+   ```
+
 ## Test case: Invalid commands and task descriptions
 
 Aim: Verify that malformed task commands and unknown commands produce helpful errors without terminating the session.
@@ -172,7 +224,7 @@ Commands:
 4. Input: `blah`
    Expected output:
    ```text
-   OOPS!!! I don't recognize that command. Try todo, deadline, event, list, mark, or unmark.
+   OOPS!!! I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or delete.
    ```
 5. Input: `mark`
    Expected output:
