@@ -1,9 +1,11 @@
+import java.time.LocalDateTime;
+
 /**
  * A task that must be completed by a specified date or time.
  */
 public class Deadline extends Task {
     /** The date or time by which the task should be completed. */
-    private final String by;
+    private final LocalDateTime by;
 
     /**
      * Creates a deadline task.
@@ -11,7 +13,7 @@ public class Deadline extends Task {
      * @param description the text describing the task
      * @param by the date or time by which the task should be completed
      */
-    public Deadline(String description, String by) {
+    public Deadline(String description, LocalDateTime by) {
         super(description);
         this.by = by;
     }
@@ -23,11 +25,12 @@ public class Deadline extends Task {
 
     @Override
     protected String getTaskDetails() {
-        return description + " (by: " + by + ")";
+        return description + " (by: " + DateTimeParser.format(by) + ")";
     }
 
     @Override
     public String toFileString() {
-        return "D | " + (isDone ? "1" : "0") + " | " + description + " | " + by;
+        return "D | " + (isDone ? "1" : "0") + " | " + description + " | "
+                + DateTimeParser.toStorageString(by);
     }
 }

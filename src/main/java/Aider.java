@@ -146,7 +146,7 @@ public class Aider {
             if (description.isEmpty() || by.isEmpty()) {
                 throw new AiderException("A deadline needs a description and a date or time after /by.");
             }
-            return new Deadline(description, by);
+            return new Deadline(description, DateTimeParser.parse(by));
         }
 
         if (command.equals("event") || command.startsWith("event ")) {
@@ -163,7 +163,12 @@ public class Aider {
             if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
                 throw new AiderException("An event needs text after its description, /from, and /to markers.");
             }
-            return new Event(description, from, to);
+            java.time.LocalDateTime fromDateTime = DateTimeParser.parse(from);
+            java.time.LocalDateTime toDateTime = DateTimeParser.parse(to);
+            if (toDateTime.isBefore(fromDateTime)) {
+                throw new AiderException("An event cannot end before it starts.");
+            }
+            return new Event(description, fromDateTime, toDateTime);
         }
 
         throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or delete.");
