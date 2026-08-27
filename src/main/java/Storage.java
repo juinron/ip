@@ -47,7 +47,6 @@ public class Storage {
             throw new AiderException("Cannot read the data file: " + filePath);
         }
 
-        int skipped = 0;
         try (Scanner scanner = new Scanner(file, "UTF-8")) {
             int lineNumber = 0;
             while (scanner.hasNextLine()) {
@@ -64,13 +63,11 @@ public class Storage {
                 if (line.length() > 10000) {
                     System.err.println("Warning: skipping extremely long task line " + lineNumber
                             + " in " + filePath + ": line too long");
-                    skipped++;
                     continue;
                 }
                 try {
                     tasks.add(parseLine(line));
                 } catch (AiderException exception) {
-                    skipped++;
                     System.err.println("Warning: skipped malformed task at line " + lineNumber
                             + " in " + filePath + ": " + exception.getMessage());
                 }
@@ -116,15 +113,6 @@ public class Storage {
         } catch (IOException exception) {
             temp.delete();
             throw new AiderException("Could not save the data file: " + exception.getMessage());
-        }
-
-        try {
-            Files.move(temp.toPath(), file.toPath(),
-                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException exception) {
-            temp.delete();
-            throw new AiderException("Could not finalize the data file save: "
-                    + exception.getMessage());
         }
 
         try {

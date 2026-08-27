@@ -33,74 +33,90 @@ public class Aider {
             System.out.println("Could not load tasks from storage: " + exception.getMessage());
         }
 
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().trim();
-            System.out.println(SEPARATOR);
-
-            if (command.equals("bye")) {
-                System.out.println("Bye. Hope to see you again soon!");
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (scanner.hasNextLine()) {
+                String command = scanner.nextLine().trim();
                 System.out.println(SEPARATOR);
-                break;
-            }
 
-            if (command.isEmpty()) {
-                continue;
-            }
-
-            boolean tasksChanged = false;
-
-            try {
-                if (command.equals("list")) {
-                    System.out.println("Here are the tasks in your list:");
-                    if (tasks.isEmpty()) {
-                        System.out.println("  (no tasks yet)");
-                    } else {
-                        for (int i = 0; i < tasks.size(); i++) {
-                            System.out.println((i + 1) + "." + tasks.get(i));
-                        }
-                    }
-                } else if (command.equals("mark") || command.startsWith("mark ")) {
-                    int taskIndex = getTaskIndex(command, "mark", tasks.size());
-                    tasks.get(taskIndex).markAsDone();
-                    System.out.println("Nice! I've marked this task as done:");
-                    System.out.println("  " + tasks.get(taskIndex));
-                    tasksChanged = true;
-                } else if (command.equals("unmark") || command.startsWith("unmark ")) {
-                    int taskIndex = getTaskIndex(command, "unmark", tasks.size());
-                    tasks.get(taskIndex).markAsNotDone();
-                    System.out.println("OK, I've marked this task as not done yet:");
-                    System.out.println("  " + tasks.get(taskIndex));
-                    tasksChanged = true;
-                } else if (command.equals("delete") || command.startsWith("delete ")) {
-                    int taskIndex = getTaskIndex(command, "delete", tasks.size());
-                    Task removedTask = tasks.remove(taskIndex);
-                    System.out.println("Noted. I've removed this task:");
-                    System.out.println("  " + removedTask);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    tasksChanged = true;
-                } else {
-                    Task newTask = createTask(command);
-                    tasks.add(newTask);
-                    System.out.println("Got it. I've added this task:");
-                    System.out.println("  " + newTask);
-                    System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                    tasksChanged = true;
+                if (command.equals("bye")) {
+                    System.out.println("Bye. Hope to see you again soon!");
+                    System.out.println(SEPARATOR);
+                    break;
                 }
-            } catch (AiderException exception) {
-                System.out.println("OOPS!!! " + exception.getMessage());
-            }
 
-            if (tasksChanged) {
+                if (command.isEmpty()) {
+                    continue;
+                }
+
+                boolean tasksChanged = false;
+
                 try {
-                    storage.save(tasks);
+                    if (command.equals("list")) {
+                        displayTasks(tasks);
+                    } else if (command.startsWith("mark ") || command.equals("mark")) {
+                        tasksChanged = updateTaskStatus(command, "mark", true, tasks);
+                    } else if (command.startsWith("unmark ") || command.equals("unmark")) {
+                        tasksChanged = updateTaskStatus(command, "unmark", false, tasks);
+                    } else if (command.startsWith("delete ") || command.equals("delete")) {
+                        tasksChanged = deleteTask(command, tasks);
+                    } else {
+                        Task newTask = createTask(command);
+                        tasks.add(newTask);
+                        System.out.println("Got it. I've added this task:");
+                        System.out.println("  " + newTask);
+                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                        tasksChanged = true;
+                    }
                 } catch (AiderException exception) {
-                    System.out.println("Could not save tasks to storage: " + exception.getMessage());
+                    System.out.println("OOPS!!! " + exception.getMessage());
                 }
-            }
 
-            System.out.println(SEPARATOR);
+                if (tasksChanged) {
+                    try {
+                        storage.save(tasks);
+                    } catch (AiderException exception) {
+                        System.out.println("Could not save tasks to storage: " + exception.getMessage());
+                    }
+                }
+
+                System.out.println(SEPARATOR);
+            }
         }
+    }
+
+    private static void displayTasks(ArrayList<Task> tasks) {
+        System.out.println("Here are the tasks in your list:");
+        if (tasks.isEmpty()) {
+            System.out.println("  (no tasks yet)");
+        } else {
+            for (int i = 0; i < tasks.size(); i++) {
+                System.out.println((i + 1) + "." + tasks.get(i));
+            }
+        }
+    }
+
+    private static boolean updateTaskStatus(String command, String commandName, boolean markDone,
+            ArrayList<Task> tasks) throws AiderException {
+        int taskIndex = getTaskIndex(command, commandName, tasks.size());
+        Task task = tasks.get(taskIndex);
+        if (markDone) {
+            task.markAsDone();
+            System.out.println("Nice! I've marked this task as done:");
+        } else {
+            task.markAsNotDone();
+            System.out.println("OK, I've marked this task as not done yet:");
+        }
+        System.out.println("  " + task);
+        return true;
+    }
+
+    private static boolean deleteTask(String command, ArrayList<Task> tasks) throws AiderException {
+        int taskIndex = getTaskIndex(command, "delete", tasks.size());
+        Task removedTask = tasks.remove(taskIndex);
+        System.out.println("Noted. I've removed this task:");
+        System.out.println("  " + removedTask);
+        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+        return true;
     }
 
     /**
