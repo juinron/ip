@@ -15,6 +15,9 @@ public class Aider {
             + " / ___ \\ | || |_| | |___|  _ < \n"
             + "/_/   \\_\\___|____/|_____|_| \\_\\";
 
+    /** The file path for persisting tasks. */
+    private static final String DATA_FILE_PATH = "./data/duke.txt";
+
     public static void main(String[] args) {
         System.out.println(SEPARATOR);
         System.out.println(BANNER);
@@ -22,7 +25,14 @@ public class Aider {
         System.out.println("What can I do for you?");
         System.out.println(SEPARATOR);
 
+        Storage storage = new Storage(DATA_FILE_PATH);
         ArrayList<Task> tasks = new ArrayList<>();
+        try {
+            tasks = storage.load();
+        } catch (AiderException exception) {
+            System.out.println("Could not load tasks from storage: " + exception.getMessage());
+        }
+
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -33,6 +43,8 @@ public class Aider {
                 System.out.println(SEPARATOR);
                 break;
             }
+
+            boolean tasksChanged = false;
 
             try {
                 if (command.equals("list")) {
@@ -45,26 +57,38 @@ public class Aider {
                     tasks.get(taskIndex).markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("  " + tasks.get(taskIndex));
+                    tasksChanged = true;
                 } else if (command.equals("unmark") || command.startsWith("unmark ")) {
                     int taskIndex = getTaskIndex(command, "unmark", tasks.size());
                     tasks.get(taskIndex).markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println("  " + tasks.get(taskIndex));
+                    tasksChanged = true;
                 } else if (command.equals("delete") || command.startsWith("delete ")) {
                     int taskIndex = getTaskIndex(command, "delete", tasks.size());
                     Task removedTask = tasks.remove(taskIndex);
                     System.out.println("Noted. I've removed this task:");
                     System.out.println("  " + removedTask);
                     System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    tasksChanged = true;
                 } else {
                     Task newTask = createTask(command);
                     tasks.add(newTask);
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + newTask);
                     System.out.println("Now you have " + tasks.size() + " tasks in the list.");
+                    tasksChanged = true;
                 }
             } catch (AiderException exception) {
                 System.out.println("OOPS!!! " + exception.getMessage());
+            }
+
+            if (tasksChanged) {
+                try {
+                    storage.save(tasks);
+                } catch (AiderException exception) {
+                    System.out.println("Could not save tasks to storage: " + exception.getMessage());
+                }
             }
 
             System.out.println(SEPARATOR);
