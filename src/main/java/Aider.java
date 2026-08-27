@@ -1,247 +1,83 @@
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-/**
- * Entry point for the Aider chatbot application.
- */
+/** Coordinates the user interface, parser, task list, and storage. */
 public class Aider {
-    /** Separates the chatbot's responses in the console. */
-    private static final String SEPARATOR = "____________________________________________________________";
-
-    /** The banner displayed when the chatbot starts. */
-    private static final String BANNER = "    _    ___ ____  _____ ____ \n"
-            + "   / \\  |_ _|  _ \\| ____|  _ \\ \n"
-            + "  / _ \\  | || | | |  _| | |_) |\n"
-            + " / ___ \\ | || |_| | |___|  _ < \n"
-            + "/_/   \\_\\___|____/|_____|_| \\_\\";
-
-    /** The file path for persisting tasks. */
     private static final String DATA_FILE_PATH = "./data/duke.txt";
+    private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
+    private final Parser parser;
 
-    public static void main(String[] args) {
-        System.out.println(SEPARATOR);
-        System.out.println(BANNER);
-        System.out.println("Hello! I'm Aider.");
-        System.out.println("What can I do for you?");
-        System.out.println(SEPARATOR);
-
-        Storage storage = new Storage(DATA_FILE_PATH);
-        ArrayList<Task> tasks = new ArrayList<>();
+    /** Creates Aider and loads any previously saved tasks. */
+    public Aider(String filePath) {
+        ui = new Ui();
+        parser = new Parser();
+        storage = new Storage(filePath);
+        TaskList loadedTasks;
         try {
-            tasks = storage.load();
+            loadedTasks = new TaskList(storage.load());
         } catch (AiderException exception) {
-            System.out.println("Could not load tasks from storage: " + exception.getMessage());
+            ui.showLoadingError(exception.getMessage());
+            loadedTasks = new TaskList();
         }
+        tasks = loadedTasks;
+    }
 
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (scanner.hasNextLine()) {
-                String command = scanner.nextLine().trim();
-                System.out.println(SEPARATOR);
-
+    /** Runs the command loop until the user exits. */
+    public void run() {
+        ui.showWelcome();
+        try (ui) {
+            while (ui.hasNextCommand()) {
+                String command = ui.readCommand();
                 if (command.equals("bye")) {
-                    System.out.println("Bye. Hope to see you again soon!");
-                    System.out.println(SEPARATOR);
+                    ui.showGoodbye();
                     break;
                 }
-
                 if (command.isEmpty()) {
                     continue;
                 }
 
-                boolean tasksChanged = false;
-
+                boolean changed = false;
                 try {
                     if (command.equals("list")) {
-                        displayTasks(tasks);
-                    } else if (command.startsWith("on ") || command.equals("on")) {
-                        displayTasksOnDate(command, tasks);
-                    } else if (command.startsWith("mark ") || command.equals("mark")) {
-                        tasksChanged = updateTaskStatus(command, "mark", true, tasks);
-                    } else if (command.startsWith("unmark ") || command.equals("unmark")) {
-                        tasksChanged = updateTaskStatus(command, "unmark", false, tasks);
-                    } else if (command.startsWith("delete ") || command.equals("delete")) {
-                        tasksChanged = deleteTask(command, tasks);
+                        ui.showTasks(tasks);
+                    } else if (command.equals("on") || command.startsWith("on ")) {
+                        LocalDate date = parser.parseDate(command);
+                        ui.showTasksOnDate(date, tasks.occurringOn(date));
+                    } else if (command.equals("mark") || command.startsWith("mark ")) {
+                        ui.showMarked(tasks.mark(command));
+                        changed = true;
+                    } else if (command.equals("unmark") || command.startsWith("unmark ")) {
+                        ui.showUnmarked(tasks.unmark(command));
+                        changed = true;
+                    } else if (command.equals("delete") || command.startsWith("delete ")) {
+                        ui.showDeleted(tasks.remove(tasks.indexOf(command, "delete")), tasks.size());
+                        changed = true;
                     } else {
-                        Task newTask = createTask(command);
-                        tasks.add(newTask);
-                        System.out.println("Got it. I've added this task:");
-                        System.out.println("  " + newTask);
-                        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-                        tasksChanged = true;
+                        Task task = parser.parseTask(command);
+                        tasks.add(task);
+                        ui.showAdded(task, tasks.size());
+                        changed = true;
                     }
                 } catch (AiderException exception) {
-                    System.out.println("OOPS!!! " + exception.getMessage());
+                    ui.showError(exception.getMessage());
                 }
 
-                if (tasksChanged) {
+                if (changed) {
                     try {
-                        storage.save(tasks);
+                        storage.save(tasks.asList());
                     } catch (AiderException exception) {
-                        System.out.println("Could not save tasks to storage: " + exception.getMessage());
+                        ui.showSavingError(exception.getMessage());
                     }
                 }
-
-                System.out.println(SEPARATOR);
+                ui.showSeparator();
             }
         }
     }
 
-    private static void displayTasks(ArrayList<Task> tasks) {
-        System.out.println("Here are the tasks in your list:");
-        if (tasks.isEmpty()) {
-            System.out.println("  (no tasks yet)");
-        } else {
-            for (int i = 0; i < tasks.size(); i++) {
-                System.out.println((i + 1) + "." + tasks.get(i));
-            }
-        }
-    }
-
-    /**
-     * Displays deadlines and events that occur on a requested calendar date.
-     * An event is included when it overlaps any part of that date.
-     *
-     * @param command the complete on command
-     * @param tasks the tasks to search
-     * @throws AiderException if the command has no valid date
-     */
-    private static void displayTasksOnDate(String command, ArrayList<Task> tasks)
-            throws AiderException {
-        String dateText = command.substring("on".length()).trim();
-        if (dateText.isEmpty()) {
-            throw new AiderException("The on command needs a date, for example: on 2019-12-02.");
-        }
-        LocalDate date = DateTimeParser.parse(dateText).toLocalDate();
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end = date.plusDays(1).atStartOfDay();
-
-        System.out.println("Tasks on " + DateTimeParser.format(start) + ":");
-        int number = 1;
-        for (Task task : tasks) {
-            boolean matches = task instanceof Deadline
-                    && ((Deadline) task).getBy().toLocalDate().equals(date);
-            if (task instanceof Event) {
-                Event event = (Event) task;
-                matches = event.getFrom().isBefore(end) && !event.getTo().isBefore(start);
-            }
-            if (matches) {
-                System.out.println(number + "." + task);
-                number++;
-            }
-        }
-        if (number == 1) {
-            System.out.println("  (no deadlines or events)");
-        }
-    }
-
-    private static boolean updateTaskStatus(String command, String commandName, boolean markDone,
-            ArrayList<Task> tasks) throws AiderException {
-        int taskIndex = getTaskIndex(command, commandName, tasks.size());
-        Task task = tasks.get(taskIndex);
-        if (markDone) {
-            task.markAsDone();
-            System.out.println("Nice! I've marked this task as done:");
-        } else {
-            task.markAsNotDone();
-            System.out.println("OK, I've marked this task as not done yet:");
-        }
-        System.out.println("  " + task);
-        return true;
-    }
-
-    private static boolean deleteTask(String command, ArrayList<Task> tasks) throws AiderException {
-        int taskIndex = getTaskIndex(command, "delete", tasks.size());
-        Task removedTask = tasks.remove(taskIndex);
-        System.out.println("Noted. I've removed this task:");
-        System.out.println("  " + removedTask);
-        System.out.println("Now you have " + tasks.size() + " tasks in the list.");
-        return true;
-    }
-
-    /**
-     * Creates the appropriate task subtype from a user command.
-     *
-     * @param command the complete command entered by the user
-     * @return the task represented by the command
-     */
-    private static Task createTask(String command) throws AiderException {
-        if (command.equals("todo") || command.startsWith("todo ")) {
-            String description = command.substring("todo".length()).trim();
-            if (description.isEmpty()) {
-                throw new AiderException("A todo needs a description, for example: todo read book.");
-            }
-            return new Todo(description);
-        }
-
-        if (command.equals("deadline") || command.startsWith("deadline ")) {
-            String details = command.substring("deadline".length()).trim();
-            int byIndex = details.indexOf(" /by ");
-            if (byIndex < 0) {
-                throw new AiderException("A deadline must include a description and a /by date or time.");
-            }
-
-            String description = details.substring(0, byIndex).trim();
-            String by = details.substring(byIndex + " /by ".length()).trim();
-            if (description.isEmpty() || by.isEmpty()) {
-                throw new AiderException("A deadline needs a description and a date or time after /by.");
-            }
-            return new Deadline(description, DateTimeParser.parse(by));
-        }
-
-        if (command.equals("event") || command.startsWith("event ")) {
-            String details = command.substring("event".length()).trim();
-            int fromIndex = details.indexOf(" /from ");
-            int toIndex = details.indexOf(" /to ");
-            if (fromIndex < 0 || toIndex <= fromIndex) {
-                throw new AiderException("An event needs a description, /from time, and /to time.");
-            }
-
-            String description = details.substring(0, fromIndex).trim();
-            String from = details.substring(fromIndex + " /from ".length(), toIndex).trim();
-            String to = details.substring(toIndex + " /to ".length()).trim();
-            if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-                throw new AiderException("An event needs text after its description, /from, and /to markers.");
-            }
-            java.time.LocalDateTime fromDateTime = DateTimeParser.parse(from);
-            java.time.LocalDateTime toDateTime = DateTimeParser.parse(to);
-            if (toDateTime.isBefore(fromDateTime)) {
-                throw new AiderException("An event cannot end before it starts.");
-            }
-            return new Event(description, fromDateTime, toDateTime);
-        }
-
-        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or delete.");
-    }
-
-    /**
-     * Parses and validates a task number from a mark or unmark command.
-     *
-     * @param command the complete command entered by the user
-     * @param commandName the command name being parsed
-     * @param taskCount the number of tasks currently stored
-     * @return the zero-based index of the selected task
-     * @throws AiderException if the command does not contain a valid task number
-     */
-    private static int getTaskIndex(String command, String commandName, int taskCount)
-            throws AiderException {
-        String taskNumberText = command.substring(commandName.length()).trim();
-        if (taskNumberText.isEmpty()) {
-            throw new AiderException("The " + commandName + " command needs a task number.");
-        }
-
-        final int taskNumber;
-        try {
-            taskNumber = Integer.parseInt(taskNumberText);
-        } catch (NumberFormatException exception) {
-            throw new AiderException("The " + commandName + " command needs a whole-number task number.");
-        }
-
-        int taskIndex = taskNumber - 1;
-        if (taskIndex < 0 || taskIndex >= taskCount) {
-            throw new AiderException("That task number does not exist.");
-        }
-        return taskIndex;
+    /** Starts Aider with its project-relative data file. */
+    public static void main(String[] args) {
+        new Aider(DATA_FILE_PATH).run();
     }
 }
