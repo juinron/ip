@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -53,6 +55,8 @@ public class Aider {
                 try {
                     if (command.equals("list")) {
                         displayTasks(tasks);
+                    } else if (command.startsWith("on ") || command.equals("on")) {
+                        displayTasksOnDate(command, tasks);
                     } else if (command.startsWith("mark ") || command.equals("mark")) {
                         tasksChanged = updateTaskStatus(command, "mark", true, tasks);
                     } else if (command.startsWith("unmark ") || command.equals("unmark")) {
@@ -92,6 +96,43 @@ public class Aider {
             for (int i = 0; i < tasks.size(); i++) {
                 System.out.println((i + 1) + "." + tasks.get(i));
             }
+        }
+    }
+
+    /**
+     * Displays deadlines and events that occur on a requested calendar date.
+     * An event is included when it overlaps any part of that date.
+     *
+     * @param command the complete on command
+     * @param tasks the tasks to search
+     * @throws AiderException if the command has no valid date
+     */
+    private static void displayTasksOnDate(String command, ArrayList<Task> tasks)
+            throws AiderException {
+        String dateText = command.substring("on".length()).trim();
+        if (dateText.isEmpty()) {
+            throw new AiderException("The on command needs a date, for example: on 2019-12-02.");
+        }
+        LocalDate date = DateTimeParser.parse(dateText).toLocalDate();
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+
+        System.out.println("Tasks on " + DateTimeParser.format(start) + ":");
+        int number = 1;
+        for (Task task : tasks) {
+            boolean matches = task instanceof Deadline
+                    && ((Deadline) task).getBy().toLocalDate().equals(date);
+            if (task instanceof Event) {
+                Event event = (Event) task;
+                matches = event.getFrom().isBefore(end) && !event.getTo().isBefore(start);
+            }
+            if (matches) {
+                System.out.println(number + "." + task);
+                number++;
+            }
+        }
+        if (number == 1) {
+            System.out.println("  (no deadlines or events)");
         }
     }
 

@@ -23,6 +23,24 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /**
+     * Returns the event start date and time.
+     *
+     * @return the event start date and time
+     */
+    public LocalDateTime getFrom() {
+        return from;
+    }
+
+    /**
+     * Returns the event end date and time.
+     *
+     * @return the event end date and time
+     */
+    public LocalDateTime getTo() {
+        return to;
+    }
+
     @Override
     public String getTypeIcon() {
         return "E";
