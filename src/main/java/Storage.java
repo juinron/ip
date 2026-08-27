@@ -126,6 +126,15 @@ public class Storage {
             throw new AiderException("Could not finalize the data file save: "
                     + exception.getMessage());
         }
+
+        try {
+            Files.move(temp.toPath(), file.toPath(),
+                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            temp.delete();
+            throw new AiderException("Could not finalize the data file save: "
+                    + exception.getMessage());
+        }
     }
 
     /**
