@@ -44,13 +44,21 @@ public class Aider {
                 break;
             }
 
+            if (command.isEmpty()) {
+                continue;
+            }
+
             boolean tasksChanged = false;
 
             try {
                 if (command.equals("list")) {
                     System.out.println("Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        System.out.println((i + 1) + "." + tasks.get(i));
+                    if (tasks.isEmpty()) {
+                        System.out.println("  (no tasks yet)");
+                    } else {
+                        for (int i = 0; i < tasks.size(); i++) {
+                            System.out.println((i + 1) + "." + tasks.get(i));
+                        }
                     }
                 } else if (command.equals("mark") || command.startsWith("mark ")) {
                     int taskIndex = getTaskIndex(command, "mark", tasks.size());
