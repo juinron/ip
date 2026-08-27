@@ -73,4 +73,13 @@ public class Task {
     public String toString() {
         return "[" + getTypeIcon() + "][" + getStatusIcon() + "] " + getTaskDetails();
     }
+
+    /**
+     * Returns the task in the file storage format.
+     *
+     * @return the file storage representation
+     */
+    public String toFileString() {
+        return getTypeIcon() + " | " + (isDone ? "1" : "0") + " | " + description;
+    }
 }
