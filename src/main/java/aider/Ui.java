@@ -1,6 +1,12 @@
+package aider;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import aider.model.Task;
+import aider.model.TaskList;
+import aider.util.DateTimeParser;
 
 /** Handles all console input and output for Aider. */
 public class Ui implements AutoCloseable {

@@ -1,4 +1,8 @@
+package aider.model;
+
 import java.time.LocalDateTime;
+
+import aider.util.DateTimeParser;
 
 /**
  * A task that must be completed by a specified date or time.

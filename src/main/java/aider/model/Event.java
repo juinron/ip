@@ -1,4 +1,8 @@
+package aider.model;
+
 import java.time.LocalDateTime;
+
+import aider.util.DateTimeParser;
 
 /**
  * A task that starts and ends at specified dates or times.
