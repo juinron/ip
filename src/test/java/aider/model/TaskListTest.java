@@ -31,6 +31,16 @@ class TaskListTest {
         assertEquals(2, tasks.occurringOn(LocalDate.of(2026, 9, 1)).size());
     }
 
+    @Test
+    void find_returnsCaseInsensitiveDescriptionMatches() throws Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Todo("Book dentist appointment"));
+        tasks.add(new Todo("buy milk"));
+
+        assertEquals(2, tasks.find("find book").size());
+    }
+
     private static java.time.LocalDateTime dateTime(int year, int month, int day, int hour,
             int minute) {
         return java.time.LocalDateTime.of(year, month, day, hour, minute);

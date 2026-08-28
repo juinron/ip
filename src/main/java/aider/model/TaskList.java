@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import aider.AiderException;
 
@@ -39,6 +40,23 @@ public class TaskList {
     /** Returns whether this task list contains no tasks. */
     public boolean isEmpty() {
         return tasks.isEmpty();
+    }
+
+    /** Returns tasks whose descriptions contain the requested keyword. */
+    public ArrayList<Task> find(String command) throws AiderException {
+        String keyword = command.substring("find".length()).trim();
+        if (keyword.isEmpty()) {
+            throw new AiderException("The find command needs a keyword.");
+        }
+
+        String normalizedKeyword = keyword.toLowerCase(Locale.ENGLISH);
+        ArrayList<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase(Locale.ENGLISH).contains(normalizedKeyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
     }
 
     /** Returns the task at a zero-based index. */
