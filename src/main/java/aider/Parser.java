@@ -1,5 +1,13 @@
+package aider;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import aider.model.Deadline;
+import aider.model.Event;
+import aider.model.Task;
+import aider.model.Todo;
+import aider.util.DateTimeParser;
 
 /** Interprets user commands and creates the requested task objects. */
 public class Parser {

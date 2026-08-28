@@ -1,3 +1,5 @@
+package aider.model;
+
 /**
  * Represents a task entered by the user.
  */

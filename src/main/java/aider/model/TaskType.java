@@ -1,3 +1,5 @@
+package aider.model;
+
 /**
  * The supported types of tasks in Aider.
  */

@@ -1,5 +1,10 @@
+package aider;
+
 import java.time.LocalDate;
-import java.util.ArrayList;
+
+import aider.model.Task;
+import aider.model.TaskList;
+import aider.storage.Storage;
 
 /** Coordinates the user interface, parser, task list, and storage. */
 public class Aider {

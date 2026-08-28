@@ -1,7 +1,11 @@
+package aider.util;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
+
+import aider.AiderException;
 
 /** Parses and formats the date and time values used by Aider tasks. */
 public final class DateTimeParser {

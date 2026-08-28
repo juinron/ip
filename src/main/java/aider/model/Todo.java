@@ -1,3 +1,5 @@
+package aider.model;
+
 /**
  * A task without an attached date or time.
  */

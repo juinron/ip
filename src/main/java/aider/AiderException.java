@@ -1,3 +1,5 @@
+package aider;
+
 /**
  * Represents an error caused by invalid input to the Aider chatbot.
  */
