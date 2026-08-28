@@ -10,12 +10,16 @@ import aider.util.DateTimeParser;
 
 /** Handles all console input and output for Aider. */
 public class Ui implements AutoCloseable {
+    /** Separates the application banner and individual command responses. */
     private static final String SEPARATOR = "____________________________________________________________";
+
+    /** ASCII art displayed when the application starts. */
     private static final String BANNER = "    _    ___ ____  _____ ____ \n"
             + "   / \\  |_ _|  _ \\| ____|  _ \\ \n"
             + "  / _ \\  | || | | |  _| | |_) |\n"
             + " / ___ \\ | || |_| | |___|  _ < \n"
             + "/_/   \\_\\___|____/|_____|_| \\";
+    /** Reads commands from standard input. */
     private final Scanner scanner;
 
     /** Creates a user interface reading from standard input. */
