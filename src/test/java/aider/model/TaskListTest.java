@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 /** Tests task-list operations and date filtering. */
 class TaskListTest {
     @Test
-    void markAndUnmarkUpdateTaskStatus() throws Exception {
+    void markAndUnmark_updateTaskStatus() throws Exception {
         TaskList tasks = new TaskList();
         tasks.add(new Todo("read book"));
 
@@ -21,7 +21,7 @@ class TaskListTest {
     }
 
     @Test
-    void occurringOnReturnsDeadlinesAndOverlappingEvents() throws Exception {
+    void occurringOn_returnsDeadlinesAndOverlappingEvents() throws Exception {
         TaskList tasks = new TaskList();
         tasks.add(new Todo("read book"));
         tasks.add(new Deadline("submit report", dateTime(2026, 9, 1, 9, 0)));

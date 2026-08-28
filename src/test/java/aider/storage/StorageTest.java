@@ -21,7 +21,7 @@ class StorageTest {
     Path temporaryDirectory;
 
     @Test
-    void saveAndLoadRoundTripsTasks() throws Exception {
+    void saveAndLoad_roundTripsTasks() throws Exception {
         Storage storage = new Storage(temporaryDirectory.resolve("duke.txt").toString());
         Todo todo = new Todo("read book");
         todo.markAsDone();

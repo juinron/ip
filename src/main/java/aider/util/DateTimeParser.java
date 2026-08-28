@@ -1,8 +1,10 @@
 package aider.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.LocalTime;
 import java.util.Locale;
 
 import aider.AiderException;
@@ -50,7 +52,7 @@ public final class DateTimeParser {
         }
 
         try {
-            return java.time.LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            return LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
         } catch (DateTimeParseException exception) {
             throw new AiderException("Invalid date or time: " + value
                     + ". Use yyyy-MM-dd or yyyy-MM-dd HHmm.");
@@ -64,7 +66,7 @@ public final class DateTimeParser {
      * @return the user-facing date-time text
      */
     public static String format(LocalDateTime dateTime) {
-        if (dateTime.toLocalTime().equals(java.time.LocalTime.MIDNIGHT)) {
+        if (dateTime.toLocalTime().equals(LocalTime.MIDNIGHT)) {
             return dateTime.format(DATE_DISPLAY_FORMAT);
         }
         return dateTime.format(DATE_TIME_DISPLAY_FORMAT);
