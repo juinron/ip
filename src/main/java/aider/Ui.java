@@ -72,7 +72,7 @@ public class Ui implements AutoCloseable {
     /** Displays all tasks. */
     public void showTasks(TaskList tasks) {
         System.out.println("Here are the tasks in your list:");
-        if (tasks.size() == 0) {
+        if (tasks.isEmpty()) {
             System.out.println("  (no tasks yet)");
         } else {
             for (int i = 0; i < tasks.size(); i++) {

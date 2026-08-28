@@ -36,6 +36,11 @@ public class TaskList {
         return tasks.size();
     }
 
+    /** Returns whether this task list contains no tasks. */
+    public boolean isEmpty() {
+        return tasks.isEmpty();
+    }
+
     /** Returns the task at a zero-based index. */
     public Task get(int index) {
         return tasks.get(index);

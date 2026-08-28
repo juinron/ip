@@ -16,7 +16,7 @@ class ParserTest {
     private final Parser parser = new Parser();
 
     @Test
-    void parseDeadlineCommandCreatesDeadline() throws AiderException {
+    void parseDeadlineCommand_createsDeadline() throws AiderException {
         Task task = parser.parseTask("deadline submit report /by 2026-09-01 0900");
 
         assertEquals("submit report", task.getDescription());
@@ -25,14 +25,14 @@ class ParserTest {
     }
 
     @Test
-    void parseEventCommandRejectsEndBeforeStart() {
+    void parseEventCommand_rejectsEndBeforeStart() {
         assertThrows(AiderException.class,
                 () -> parser.parseTask("event lecture /from 2026-09-01 1200"
                         + " /to 2026-09-01 1000"));
     }
 
     @Test
-    void parseEventCommandCreatesEvent() throws AiderException {
+    void parseEventCommand_createsEvent() throws AiderException {
         Task task = parser.parseTask("event lecture /from 2026-09-01 1000"
                 + " /to 2026-09-01 1200");
 
