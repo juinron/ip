@@ -47,6 +47,8 @@ public class Aider {
                 try {
                     if (command.equals("list")) {
                         ui.showTasks(tasks);
+                    } else if (command.equals("find") || command.startsWith("find ")) {
+                        ui.showFound(tasks.find(command));
                     } else if (command.equals("on") || command.startsWith("on ")) {
                         LocalDate date = parser.parseDate(command);
                         ui.showTasksOnDate(date, tasks.occurringOn(date));

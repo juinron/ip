@@ -77,6 +77,18 @@ public class Ui implements AutoCloseable {
         }
     }
 
+    /** Displays tasks matching a search keyword. */
+    public void showFound(ArrayList<Task> tasks) {
+        System.out.println("Here are the matching tasks:");
+        if (tasks.isEmpty()) {
+            System.out.println("  (no matching tasks)");
+        } else {
+            for (int i = 0; i < tasks.size(); i++) {
+                System.out.println((i + 1) + "." + tasks.get(i));
+            }
+        }
+    }
+
     /** Displays tasks occurring on a date. */
     public void showTasksOnDate(LocalDate date, ArrayList<Task> tasks) {
         System.out.println("Tasks on " + DateTimeParser.format(date.atStartOfDay()) + ":");
