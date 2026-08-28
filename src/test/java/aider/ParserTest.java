@@ -1,0 +1,44 @@
+package aider;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Test;
+
+import aider.model.Deadline;
+import aider.model.Event;
+import aider.model.Task;
+
+/** Tests conversion of user commands into task objects. */
+class ParserTest {
+    private final Parser parser = new Parser();
+
+    @Test
+    void parseDeadlineCommandCreatesDeadline() throws AiderException {
+        Task task = parser.parseTask("deadline submit report /by 2026-09-01 0900");
+
+        assertEquals("submit report", task.getDescription());
+        Deadline deadline = (Deadline) task;
+        assertEquals(LocalDateTime.of(2026, 9, 1, 9, 0), deadline.getBy());
+    }
+
+    @Test
+    void parseEventCommandRejectsEndBeforeStart() {
+        assertThrows(AiderException.class,
+                () -> parser.parseTask("event lecture /from 2026-09-01 1200"
+                        + " /to 2026-09-01 1000"));
+    }
+
+    @Test
+    void parseEventCommandCreatesEvent() throws AiderException {
+        Task task = parser.parseTask("event lecture /from 2026-09-01 1000"
+                + " /to 2026-09-01 1200");
+
+        assertEquals("lecture", task.getDescription());
+        Event event = (Event) task;
+        assertEquals(LocalDateTime.of(2026, 9, 1, 10, 0), event.getFrom());
+        assertEquals(LocalDateTime.of(2026, 9, 1, 12, 0), event.getTo());
+    }
+}
