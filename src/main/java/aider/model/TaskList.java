@@ -9,6 +9,7 @@ import aider.AiderException;
 
 /** Owns the tasks and operations performed on the task list. */
 public class TaskList {
+    /** Tasks in the order in which they were added. */
     private final ArrayList<Task> tasks;
 
     /** Creates an empty task list. */
