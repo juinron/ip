@@ -118,7 +118,8 @@ public class Aider {
             return new Event(description, from, to);
         }
 
-        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or delete.");
+        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, "
+                + "unmark, or delete.");
     }
 
     /**
