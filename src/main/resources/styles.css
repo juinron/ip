@@ -1,0 +1,28 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-background-color: #f4f6f8;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 10;
+}
+
+.duke-dialog Label {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+}
+
+.user-dialog Label {
+    -fx-background-color: #d6ebff;
+    -fx-background-radius: 12;
+}
+
+.text-field {
+    -fx-background-radius: 8;
+}
+
+.button {
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
