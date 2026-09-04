@@ -52,44 +52,94 @@ public class Aider {
                     continue;
                 }
 
-                boolean changed = false;
                 try {
-                    if (command.equals("list")) {
-                        ui.showTasks(tasks);
-                    } else if (command.equals("find") || command.startsWith("find ")) {
-                        ui.showFound(tasks.find(command));
-                    } else if (command.equals("on") || command.startsWith("on ")) {
-                        LocalDate date = parser.parseDate(command);
-                        ui.showTasksOnDate(date, tasks.occurringOn(date));
-                    } else if (command.equals("mark") || command.startsWith("mark ")) {
-                        ui.showMarked(tasks.mark(command));
-                        changed = true;
-                    } else if (command.equals("unmark") || command.startsWith("unmark ")) {
-                        ui.showUnmarked(tasks.unmark(command));
-                        changed = true;
-                    } else if (command.equals("delete") || command.startsWith("delete ")) {
-                        ui.showDeleted(tasks.remove(tasks.indexOf(command, "delete")), tasks.size());
-                        changed = true;
-                    } else {
-                        Task task = parser.parseTask(command);
-                        tasks.add(task);
-                        ui.showAdded(task, tasks.size());
-                        changed = true;
-                    }
+                    System.out.println(processCommand(command));
                 } catch (AiderException exception) {
                     ui.showError(exception.getMessage());
-                }
-
-                if (changed) {
-                    try {
-                        storage.save(tasks.asList());
-                    } catch (AiderException exception) {
-                        ui.showSavingError(exception.getMessage());
-                    }
                 }
                 ui.showSeparator();
             }
         }
+    }
+
+    /**
+     * Processes one command and returns the text that should be shown to a user.
+     * This method is shared by the command-line and graphical interfaces.
+     *
+     * @param command the command entered by the user
+     * @return the command response
+     * @throws AiderException if the command is invalid or changes cannot be saved
+     */
+    public String processCommand(String command) throws AiderException {
+        if (command.equals("bye")) {
+            return "Bye. Hope to see you again soon!";
+        }
+
+        if (command.equals("list")) {
+            StringBuilder response = new StringBuilder("Here are the tasks in your list:");
+            if (tasks.isEmpty()) {
+                return response.append("\n  (no tasks yet)").toString();
+            }
+            for (int i = 0; i < tasks.size(); i++) {
+                response.append("\n").append(i + 1).append(".").append(tasks.get(i));
+            }
+            return response.toString();
+        }
+
+        if (command.equals("find") || command.startsWith("find ")) {
+            return formatTasks("Here are the matching tasks:", tasks.find(command), "no matching tasks");
+        }
+
+        if (command.equals("on") || command.startsWith("on ")) {
+            LocalDate date = parser.parseDate(command);
+            return formatTasks("Tasks on " + date + ":", tasks.occurringOn(date),
+                    "no deadlines or events");
+        }
+
+        boolean changed = false;
+        String response;
+        if (command.equals("mark") || command.startsWith("mark ")) {
+            Task task = tasks.mark(command);
+            response = "Nice! I've marked this task as done:\n  " + task;
+            changed = true;
+        } else if (command.equals("unmark") || command.startsWith("unmark ")) {
+            Task task = tasks.unmark(command);
+            response = "OK, I've marked this task as not done yet:\n  " + task;
+            changed = true;
+        } else if (command.equals("delete") || command.startsWith("delete ")) {
+            Task task = tasks.remove(tasks.indexOf(command, "delete"));
+            response = "Noted. I've removed this task:\n  " + task
+                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+            changed = true;
+        } else {
+            Task task = parser.parseTask(command);
+            tasks.add(task);
+            response = "Got it. I've added this task:\n  " + task
+                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+            changed = true;
+        }
+
+        if (changed) {
+            try {
+                storage.save(tasks.asList());
+            } catch (AiderException exception) {
+                throw new AiderException("Could not save the data file: " + exception.getMessage());
+            }
+        }
+        return response;
+    }
+
+    /** Formats a list response shared by search and date queries. */
+    private static String formatTasks(String heading, java.util.ArrayList<Task> matchingTasks,
+            String emptyMessage) {
+        StringBuilder response = new StringBuilder(heading);
+        if (matchingTasks.isEmpty()) {
+            return response.append("\n  (").append(emptyMessage).append(")").toString();
+        }
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            response.append("\n").append(i + 1).append(".").append(matchingTasks.get(i));
+        }
+        return response.toString();
     }
 
     /** Starts Aider with its project-relative data file. */
