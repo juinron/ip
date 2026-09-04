@@ -26,9 +26,8 @@ class ParserTest {
 
     @Test
     void parseEventCommand_rejectsEndBeforeStart() {
-        assertThrows(AiderException.class,
-                () -> parser.parseTask("event lecture /from 2026-09-01 1200"
-                        + " /to 2026-09-01 1000"));
+        String command = "event lecture /from 2026-09-01 1200 /to 2026-09-01 1000";
+        assertThrows(AiderException.class, () -> parser.parseTask(command));
     }
 
     @Test

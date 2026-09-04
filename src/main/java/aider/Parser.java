@@ -56,7 +56,8 @@ public class Parser {
             return new Event(description, fromDate, toDate);
         }
 
-        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, unmark, or delete.");
+        throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, "
+                + "unmark, or delete.");
     }
 
     /** Parses the date used by the on command. */
