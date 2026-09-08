@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Entry point for the Aider chatbot application.
@@ -30,11 +32,9 @@ public class Aider {
         }
 
         if (command.equals("list")) {
-            StringBuilder response = new StringBuilder("Here are the tasks in your list:");
-            for (int i = 0; i < TASKS.size(); i++) {
-                response.append("\n").append(i + 1).append(".").append(TASKS.get(i));
-            }
-            return response.toString();
+            return IntStream.range(0, TASKS.size())
+                    .mapToObj(index -> "\n" + (index + 1) + "." + TASKS.get(index))
+                    .collect(Collectors.joining("", "Here are the tasks in your list:", ""));
         }
 
         if (command.equals("mark") || command.startsWith("mark ")) {
