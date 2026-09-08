@@ -27,4 +27,9 @@ public class Event extends Task {
     protected String getTaskDetails() {
         return description + " (from: " + from + " to: " + to + ")";
     }
+
+    @Override
+    protected String getScheduleText() {
+        return from + " to " + to;
+    }
 }

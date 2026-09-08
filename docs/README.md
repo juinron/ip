@@ -20,6 +20,24 @@ Example: `keyword (optional arguments)`
 expected output
 ```
 
+## Viewing schedules
+
+Use `schedule <date or time>` to view deadlines and events scheduled for a
+particular date or time. The search is case-insensitive and uses the date or
+time text entered when the task was created.
+
+Example:
+
+```text
+deadline submit report /by Friday
+event project meeting /from Friday 2pm /to Friday 4pm
+schedule Friday
+```
+
+The matching tasks are displayed as a schedule. If no scheduled task matches,
+Aider reports that there are no tasks scheduled for the requested date or
+time.
+
 ## Feature ABC
 
 // Feature details

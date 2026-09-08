@@ -21,4 +21,9 @@ public class Deadline extends Task {
     protected String getTaskDetails() {
         return description + " (by: " + by + ")";
     }
+
+    @Override
+    protected String getScheduleText() {
+        return by;
+    }
 }

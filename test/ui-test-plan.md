@@ -236,3 +236,26 @@ Commands:
    ```text
    Bye. Hope to see you again soon!
    ```
+
+## Test case: View a schedule
+
+Aim: Verify that `schedule <date or time>` displays matching deadlines and
+events without displaying unscheduled todo tasks.
+
+Commands:
+
+1. Input: `todo read book`
+2. Input: `deadline submit report /by Friday`
+3. Input: `event project meeting /from Friday 2pm /to Friday 4pm`
+4. Input: `schedule friday`
+   Expected output:
+   ```text
+   Schedule for friday:
+     [D][ ] submit report (by: Friday)
+     [E][ ] project meeting (from: Friday 2pm to: Friday 4pm)
+   ```
+5. Input: `schedule Monday`
+   Expected output:
+   ```text
+   No tasks scheduled for Monday.
+   ```

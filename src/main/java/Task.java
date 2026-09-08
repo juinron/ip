@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 /**
  * Represents a task entered by the user.
  */
@@ -68,6 +70,27 @@ public class Task {
      */
     public String getTypeIcon() {
         return type.getIcon();
+    }
+
+    /**
+     * Checks whether this task is scheduled on the supplied date or time.
+     *
+     * @param dateOrTime the date or time to search for
+     * @return whether this task has a matching schedule entry
+     */
+    public boolean isScheduledOn(String dateOrTime) {
+        String scheduleText = getScheduleText().toLowerCase(Locale.ROOT);
+        return !scheduleText.isEmpty()
+                && scheduleText.contains(dateOrTime.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Returns the free-form scheduling text associated with this task.
+     *
+     * @return the scheduling text, or an empty string when unscheduled
+     */
+    protected String getScheduleText() {
+        return "";
     }
 
     /**

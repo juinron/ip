@@ -37,6 +37,14 @@ public class Aider {
                     .collect(Collectors.joining("", "Here are the tasks in your list:", ""));
         }
 
+        if (command.equals("schedule") || command.startsWith("schedule ")) {
+            String dateOrTime = command.substring("schedule".length()).trim();
+            if (dateOrTime.isEmpty()) {
+                throw new AiderException("The schedule command needs a date or time.");
+            }
+            return viewSchedule(dateOrTime);
+        }
+
         if (command.equals("mark") || command.startsWith("mark ")) {
             int taskIndex = getTaskIndex(command, "mark", TASKS.size());
             TASKS.get(taskIndex).markAsDone();
@@ -136,7 +144,25 @@ public class Aider {
         }
 
         throw new AiderException("I don't recognize that command. Try todo, deadline, event, list, mark, "
-                + "unmark, or delete.");
+                + "unmark, delete, or schedule.");
+    }
+
+    /**
+     * Builds a schedule containing tasks whose date or time matches the query.
+     *
+     * @param dateOrTime the date or time to search for
+     * @return the formatted schedule
+     */
+    private static String viewSchedule(String dateOrTime) {
+        String matchingTasks = TASKS.stream()
+                .filter(task -> task.isScheduledOn(dateOrTime))
+                .map(task -> "  " + task)
+                .collect(Collectors.joining("\n"));
+
+        if (matchingTasks.isEmpty()) {
+            return "No tasks scheduled for " + dateOrTime + ".";
+        }
+        return "Schedule for " + dateOrTime + ":\n" + matchingTasks;
     }
 
     /**
