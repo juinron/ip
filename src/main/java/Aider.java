@@ -57,6 +57,7 @@ public class Aider {
         }
 
         Task newTask = createTask(command);
+        assert newTask != null : "Creating a task must return a task";
         TASKS.add(newTask);
         return "Got it. I've added this task:\n  " + newTask
                 + "\nNow you have " + TASKS.size() + " tasks in the list.";
@@ -165,6 +166,7 @@ public class Aider {
         if (taskIndex < 0 || taskIndex >= taskCount) {
             throw new AiderException("That task number does not exist.");
         }
+        assert taskIndex >= 0 && taskIndex < taskCount : "Validated task index must be in range";
         return taskIndex;
     }
 }
