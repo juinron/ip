@@ -8,14 +8,28 @@ public class Task {
     /** Whether the task has been completed. */
     protected boolean isDone;
 
+    /** The type of task represented by this object. */
+    private final TaskType type;
+
     /**
      * Creates an incomplete task with the given description.
      *
      * @param description the text describing the task
      */
     public Task(String description) {
+        this(description, TaskType.TODO);
+    }
+
+    /**
+     * Creates an incomplete task with the given description and type.
+     *
+     * @param description the text describing the task
+     * @param type the type of task represented by this object
+     */
+    protected Task(String description, TaskType type) {
         this.description = description;
         this.isDone = false;
+        this.type = type;
     }
 
     /** Marks this task as completed. */
@@ -52,7 +66,7 @@ public class Task {
      * @return the task type icon
      */
     public String getTypeIcon() {
-        return "T";
+        return type.getIcon();
     }
 
     /**
