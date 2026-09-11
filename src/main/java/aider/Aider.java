@@ -1,6 +1,8 @@
 package aider;
 
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import aider.model.Task;
 import aider.model.TaskList;
@@ -76,14 +78,12 @@ public class Aider {
         }
 
         if (command.equals("list")) {
-            StringBuilder response = new StringBuilder("Here are the tasks in your list:");
             if (tasks.isEmpty()) {
-                return response.append("\n  (no tasks yet)").toString();
+                return "Here are the tasks in your list:\n  (no tasks yet)";
             }
-            for (int i = 0; i < tasks.size(); i++) {
-                response.append("\n").append(i + 1).append(".").append(tasks.get(i));
-            }
-            return response.toString();
+            return IntStream.range(0, tasks.size())
+                    .mapToObj(index -> "\n" + (index + 1) + "." + tasks.get(index))
+                    .collect(Collectors.joining("", "Here are the tasks in your list:", ""));
         }
 
         if (command.equals("schedule") || command.startsWith("schedule ")) {
@@ -123,6 +123,7 @@ public class Aider {
             changed = true;
         } else {
             Task task = parser.parseTask(command);
+            assert task != null : "Parsing a task command must return a task";
             tasks.add(task);
             response = "Got it. I've added this task:\n  " + task
                     + "\nNow you have " + tasks.size() + " tasks in the list.";

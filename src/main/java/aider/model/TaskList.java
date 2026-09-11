@@ -102,6 +102,7 @@ public class TaskList {
         if (index < 0 || index >= tasks.size()) {
             throw new AiderException("That task number does not exist.");
         }
+        assert index >= 0 && index < tasks.size() : "Validated task index must be in range";
         return index;
     }
 

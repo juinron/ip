@@ -39,7 +39,9 @@ public class Event extends Task {
      */
     public Event(String description, LocalDateTime from, LocalDateTime to,
             String fromText, String toText) {
-        super(description);
+        super(description, TaskType.EVENT);
+        assert from != null : "Event start time must not be null";
+        assert to != null : "Event end time must not be null";
         this.from = from;
         this.to = to;
         this.scheduleText = fromText + " " + toText;
@@ -66,11 +68,6 @@ public class Event extends Task {
     @Override
     protected String getScheduleText() {
         return scheduleText;
-    }
-
-    @Override
-    public String getTypeIcon() {
-        return "E";
     }
 
     @Override

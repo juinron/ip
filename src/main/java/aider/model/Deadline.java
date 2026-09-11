@@ -32,7 +32,8 @@ public class Deadline extends Task {
      * @param scheduleText the date or time text entered by the user
      */
     public Deadline(String description, LocalDateTime by, String scheduleText) {
-        super(description);
+        super(description, TaskType.DEADLINE);
+        assert by != null : "Deadline time must not be null";
         this.by = by;
         this.scheduleText = scheduleText;
     }
@@ -49,11 +50,6 @@ public class Deadline extends Task {
     @Override
     protected String getScheduleText() {
         return scheduleText;
-    }
-
-    @Override
-    public String getTypeIcon() {
-        return "D";
     }
 
     @Override
