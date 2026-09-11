@@ -18,7 +18,7 @@ public class Deadline extends Task {
      * @param by the date or time by which the task should be completed
      */
     public Deadline(String description, LocalDateTime by) {
-        super(description);
+        super(description, TaskType.DEADLINE);
         assert by != null : "Deadline time must not be null";
         this.by = by;
     }
@@ -30,11 +30,6 @@ public class Deadline extends Task {
      */
     public LocalDateTime getBy() {
         return by;
-    }
-
-    @Override
-    public String getTypeIcon() {
-        return "D";
     }
 
     @Override
