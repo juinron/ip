@@ -86,6 +86,16 @@ public class Aider {
             return response.toString();
         }
 
+        if (command.equals("schedule") || command.startsWith("schedule ")) {
+            String dateOrTime = command.substring("schedule".length()).trim();
+            if (dateOrTime.isEmpty()) {
+                throw new AiderException("The schedule command needs a date or time.");
+            }
+            return formatTasks("Schedule for " + dateOrTime + ":",
+                    tasks.scheduledOn(dateOrTime),
+                    "no tasks scheduled for " + dateOrTime);
+        }
+
         if (command.equals("find") || command.startsWith("find ")) {
             return formatTasks("Here are the matching tasks:", tasks.find(command), "no matching tasks");
         }

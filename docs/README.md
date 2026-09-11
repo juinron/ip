@@ -24,6 +24,20 @@ expected output
 
 // Feature details
 
+## Viewing schedules
+
+Use `schedule <date or time>` to view deadlines and events whose original
+schedule text matches the query, case-insensitively.
+
+Example:
+
+```text
+schedule Friday
+```
+
+The matching tasks are displayed as a schedule. If no scheduled task matches,
+Aider reports that there are no tasks scheduled for the requested date or time.
+
 
 ## Feature XYZ
 

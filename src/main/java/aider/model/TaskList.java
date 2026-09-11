@@ -59,6 +59,17 @@ public class TaskList {
         return matches;
     }
 
+    /** Returns scheduled tasks whose original date or time text matches a query. */
+    public ArrayList<Task> scheduledOn(String query) {
+        ArrayList<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.isScheduledOn(query)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
+
     /** Returns the task at a zero-based index. */
     public Task get(int index) {
         return tasks.get(index);

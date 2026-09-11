@@ -41,6 +41,18 @@ class TaskListTest {
         assertEquals(2, tasks.find("find book").size());
     }
 
+    @Test
+    void scheduledOn_returnsCaseInsensitiveScheduleMatches() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Deadline("submit report", dateTime(2026, 9, 1, 9, 0), "Friday"));
+        tasks.add(new Event("conference", dateTime(2026, 9, 1, 10, 0),
+                dateTime(2026, 9, 1, 12, 0), "Friday 10am", "Friday 12pm"));
+
+        assertEquals(2, tasks.scheduledOn("frIdAy").size());
+        assertEquals(0, tasks.scheduledOn("Monday").size());
+    }
+
     private static java.time.LocalDateTime dateTime(int year, int month, int day, int hour,
             int minute) {
         return java.time.LocalDateTime.of(year, month, day, hour, minute);

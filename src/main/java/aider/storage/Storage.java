@@ -164,7 +164,7 @@ public class Storage {
                     throw new AiderException("Could not parse saved deadline: " + line);
                 }
                 task = new Deadline(join(parts, 2, parts.length - 1),
-                        DateTimeParser.parse(parts[parts.length - 1]));
+                        DateTimeParser.parse(parts[parts.length - 1]), parts[parts.length - 1]);
                 break;
             case "E":
                 if (parts.length < 5) {
@@ -172,7 +172,8 @@ public class Storage {
                 }
                 task = new Event(join(parts, 2, parts.length - 2),
                         DateTimeParser.parse(parts[parts.length - 2]),
-                        DateTimeParser.parse(parts[parts.length - 1]));
+                        DateTimeParser.parse(parts[parts.length - 1]),
+                        parts[parts.length - 2], parts[parts.length - 1]);
                 break;
             default:
                 throw new AiderException("Unknown task type in save file: " + type);
