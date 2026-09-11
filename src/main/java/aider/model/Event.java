@@ -14,6 +14,9 @@ public class Event extends Task {
     /** The date or time when the event ends. */
     private final LocalDateTime to;
 
+    /** The start and end text entered when the event was created. */
+    private final String scheduleText;
+
     /**
      * Creates an event task.
      *
@@ -22,11 +25,26 @@ public class Event extends Task {
      * @param to the event end date or time
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
+        this(description, from, to, DateTimeParser.format(from), DateTimeParser.format(to));
+    }
+
+    /**
+     * Creates an event task while preserving its original schedule text.
+     *
+     * @param description the text describing the event
+     * @param from the parsed event start date or time
+     * @param to the parsed event end date or time
+     * @param fromText the start text entered by the user
+     * @param toText the end text entered by the user
+     */
+    public Event(String description, LocalDateTime from, LocalDateTime to,
+            String fromText, String toText) {
         super(description, TaskType.EVENT);
         assert from != null : "Event start time must not be null";
         assert to != null : "Event end time must not be null";
         this.from = from;
         this.to = to;
+        this.scheduleText = fromText + " " + toText;
     }
 
     /**
@@ -45,6 +63,11 @@ public class Event extends Task {
      */
     public LocalDateTime getTo() {
         return to;
+    }
+
+    @Override
+    protected String getScheduleText() {
+        return scheduleText;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package aider.model;
 
+import java.util.Locale;
+
 /**
  * Represents a task entered by the user.
  */
@@ -79,6 +81,28 @@ public class Task {
      */
     protected String getTaskDetails() {
         return description;
+    }
+
+    /**
+     * Returns whether this task has schedule text matching the query.
+     *
+     * @param query the date or time text to search for
+     * @return whether the task is scheduled on the requested text
+     */
+    public boolean isScheduledOn(String query) {
+        String scheduleText = getScheduleText();
+        return scheduleText != null
+                && scheduleText.toLowerCase(Locale.ENGLISH)
+                .contains(query.toLowerCase(Locale.ENGLISH));
+    }
+
+    /**
+     * Returns the date or time text associated with this task.
+     *
+     * @return the schedule text, or {@code null} for an unscheduled task
+     */
+    protected String getScheduleText() {
+        return null;
     }
 
     /**
