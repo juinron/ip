@@ -113,6 +113,7 @@ public class Aider {
             changed = true;
         } else {
             Task task = parser.parseTask(command);
+            assert task != null : "Parsing a task command must return a task";
             tasks.add(task);
             response = "Got it. I've added this task:\n  " + task
                     + "\nNow you have " + tasks.size() + " tasks in the list.";

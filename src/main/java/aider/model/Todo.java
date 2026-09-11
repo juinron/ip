@@ -10,6 +10,6 @@ public class Todo extends Task {
      * @param description the text describing the task
      */
     public Todo(String description) {
-        super(description);
+        super(description, TaskType.TODO);
     }
 }
