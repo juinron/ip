@@ -22,7 +22,7 @@ public class Event extends Task {
      * @param to the event end date or time
      */
     public Event(String description, LocalDateTime from, LocalDateTime to) {
-        super(description);
+        super(description, TaskType.EVENT);
         this.from = from;
         this.to = to;
     }
@@ -43,11 +43,6 @@ public class Event extends Task {
      */
     public LocalDateTime getTo() {
         return to;
-    }
-
-    @Override
-    public String getTypeIcon() {
-        return "E";
     }
 
     @Override
