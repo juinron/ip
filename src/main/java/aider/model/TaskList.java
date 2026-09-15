@@ -27,8 +27,14 @@ public class TaskList {
         this.tasks = new ArrayList<>(tasks);
     }
 
-    /** Adds a task. */
-    public void add(Task task) {
+    /** Adds a task unless an identical task already exists. */
+    public void add(Task task) throws AiderException {
+        if (task == null) {
+            throw new AiderException("A task must be provided.");
+        }
+        if (tasks.stream().anyMatch(existing -> existing.toFileString().equals(task.toFileString()))) {
+            throw new AiderException("That task already exists. Try changing its details.");
+        }
         tasks.add(task);
     }
 

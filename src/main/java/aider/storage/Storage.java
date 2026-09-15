@@ -75,7 +75,14 @@ public class Storage {
                     continue;
                 }
                 try {
-                    tasks.add(parseLine(line));
+                    Task task = parseLine(line);
+                    if (tasks.stream().anyMatch(existing -> existing.toFileString()
+                            .equals(task.toFileString()))) {
+                        System.err.println("Warning: skipped duplicate task at line " + lineNumber
+                                + " in " + filePath);
+                        continue;
+                    }
+                    tasks.add(task);
                 } catch (AiderException exception) {
                     System.err.println("Warning: skipped malformed task at line " + lineNumber
                             + " in " + filePath + ": " + exception.getMessage());
@@ -102,8 +109,22 @@ public class Storage {
 
         File file = new File(filePath);
         File parent = file.getParentFile();
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                throw new AiderException("Data path exists but is not a file: " + filePath);
+            }
+            if (!file.canWrite()) {
+                throw new AiderException("Cannot write to the data file: " + filePath);
+            }
+        }
         if (parent != null && !parent.exists() && !parent.mkdirs()) {
             throw new AiderException("Could not create the data directory: " + parent.getPath());
+        }
+        if (parent != null && !parent.isDirectory()) {
+            throw new AiderException("Data parent path is not a directory: " + parent.getPath());
+        }
+        if (parent != null && !parent.canWrite()) {
+            throw new AiderException("Cannot write to the data directory: " + parent.getPath());
         }
 
         File temp;
@@ -152,25 +173,29 @@ public class Storage {
         }
 
         String type = parts[0].trim();
-        boolean done = parts[1].trim().equals("1");
+        String status = parts[1].trim();
+        if (!status.equals("0") && !status.equals("1")) {
+            throw new AiderException("Invalid completion flag in save file: " + status);
+        }
+        boolean done = status.equals("1");
 
         Task task;
         switch (type) {
             case "T":
-                task = new Todo(join(parts, 2, parts.length));
+                task = new Todo(requireDescription(join(parts, 2, parts.length), line));
                 break;
             case "D":
                 if (parts.length < 4) {
                     throw new AiderException("Could not parse saved deadline: " + line);
                 }
-                task = new Deadline(join(parts, 2, parts.length - 1),
+                task = new Deadline(requireDescription(join(parts, 2, parts.length - 1), line),
                         DateTimeParser.parse(parts[parts.length - 1]), parts[parts.length - 1]);
                 break;
             case "E":
                 if (parts.length < 5) {
                     throw new AiderException("Could not parse saved event: " + line);
                 }
-                task = new Event(join(parts, 2, parts.length - 2),
+                task = new Event(requireDescription(join(parts, 2, parts.length - 2), line),
                         DateTimeParser.parse(parts[parts.length - 2]),
                         DateTimeParser.parse(parts[parts.length - 1]),
                         parts[parts.length - 2], parts[parts.length - 1]);
@@ -183,6 +208,14 @@ public class Storage {
             task.markAsDone();
         }
         return task;
+    }
+
+    /** Ensures a saved task has text that can be shown to the user. */
+    private static String requireDescription(String description, String line) throws AiderException {
+        if (description.trim().isEmpty()) {
+            throw new AiderException("Saved task has no description: " + line);
+        }
+        return description;
     }
 
     /**
