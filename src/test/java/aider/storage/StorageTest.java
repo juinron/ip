@@ -1,7 +1,9 @@
 package aider.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import aider.AiderException;
 import aider.model.Deadline;
 import aider.model.Event;
 import aider.model.Task;
@@ -38,5 +41,20 @@ class StorageTest {
         assertEquals("[T][X] read book", loadedTasks.get(0).toString());
         assertEquals(tasks.get(1).toString(), loadedTasks.get(1).toString());
         assertEquals(tasks.get(2).toString(), loadedTasks.get(2).toString());
+    }
+
+    @Test
+    void save_rejectsDirectoryAsDataFile() {
+        Storage storage = new Storage(temporaryDirectory.toString());
+
+        assertThrows(AiderException.class, () -> storage.save(new ArrayList<>()));
+    }
+
+    @Test
+    void load_skipsInvalidCompletionFlag() throws Exception {
+        Path file = temporaryDirectory.resolve("invalid.txt");
+        Files.writeString(file, "T | 2 | read book" + System.lineSeparator());
+
+        assertEquals(0, new Storage(file.toString()).load().size());
     }
 }

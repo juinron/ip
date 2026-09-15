@@ -35,6 +35,9 @@ public final class DateTimeParser {
      * @throws AiderException if the value is not valid
      */
     public static LocalDateTime parse(String value) throws AiderException {
+        if (value == null || value.trim().isEmpty()) {
+            throw new AiderException("A date or time must be provided.");
+        }
         String text = value.trim();
         DateTimeFormatter[] formats = {
             DateTimeFormatter.ISO_LOCAL_DATE_TIME,

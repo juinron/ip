@@ -1,10 +1,13 @@
 package aider.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
+
+import aider.AiderException;
 
 /** Tests task-list operations and date filtering. */
 class TaskListTest {
@@ -42,7 +45,7 @@ class TaskListTest {
     }
 
     @Test
-    void scheduledOn_returnsCaseInsensitiveScheduleMatches() {
+    void scheduledOn_returnsCaseInsensitiveScheduleMatches() throws Exception {
         TaskList tasks = new TaskList();
         tasks.add(new Todo("read book"));
         tasks.add(new Deadline("submit report", dateTime(2026, 9, 1, 9, 0), "Friday"));
@@ -51,6 +54,14 @@ class TaskListTest {
 
         assertEquals(2, tasks.scheduledOn("frIdAy").size());
         assertEquals(0, tasks.scheduledOn("Monday").size());
+    }
+
+    @Test
+    void add_rejectsDuplicateTask() throws Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        assertThrows(AiderException.class, () -> tasks.add(new Todo("read book")));
     }
 
     private static java.time.LocalDateTime dateTime(int year, int month, int day, int hour,

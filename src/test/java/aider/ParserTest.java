@@ -40,4 +40,30 @@ class ParserTest {
         assertEquals(LocalDateTime.of(2026, 9, 1, 10, 0), event.getFrom());
         assertEquals(LocalDateTime.of(2026, 9, 1, 12, 0), event.getTo());
     }
+
+    @Test
+    void parseTask_normalizesHarmlessWhitespace() throws AiderException {
+        Task task = parser.parseTask("  todo   read   book  ");
+
+        assertEquals("read book", task.getDescription());
+    }
+
+    @Test
+    void parseDeadlineCommand_rejectsRepeatedByMarker() {
+        String command = "deadline submit report /by 2026-09-01 /by 2026-09-02";
+
+        assertThrows(AiderException.class, () -> parser.parseTask(command));
+    }
+
+    @Test
+    void parseEventCommand_rejectsEqualStartAndEnd() {
+        String command = "event lecture /from 2026-09-01 1000 /to 2026-09-01 1000";
+
+        assertThrows(AiderException.class, () -> parser.parseTask(command));
+    }
+
+    @Test
+    void parseTask_rejectsBlankCommand() {
+        assertThrows(AiderException.class, () -> parser.parseTask("   "));
+    }
 }

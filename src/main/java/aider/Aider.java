@@ -51,6 +51,8 @@ public class Aider {
                     break;
                 }
                 if (command.isEmpty()) {
+                    ui.showError("Please enter a command.");
+                    ui.showSeparator();
                     continue;
                 }
 
@@ -73,6 +75,8 @@ public class Aider {
      * @throws AiderException if the command is invalid or changes cannot be saved
      */
     public String processCommand(String command) throws AiderException {
+        command = normalizeCommand(command);
+
         if (command.equals("bye")) {
             return Personality.goodbyeMessage();
         }
@@ -136,6 +140,14 @@ public class Aider {
             }
         }
         return response;
+    }
+
+    /** Normalizes harmless whitespace differences before dispatching a command. */
+    private static String normalizeCommand(String command) throws AiderException {
+        if (command == null || command.isBlank()) {
+            throw new AiderException("Please enter a command.");
+        }
+        return command.trim().replaceAll("\\s+", " ");
     }
 
     /** Formats a list response shared by search and date queries. */
