@@ -74,16 +74,16 @@ public class Aider {
      */
     public String processCommand(String command) throws AiderException {
         if (command.equals("bye")) {
-            return "Bye. Hope to see you again soon!";
+            return Personality.goodbyeMessage();
         }
 
         if (command.equals("list")) {
             if (tasks.isEmpty()) {
-                return "Here are the tasks in your list:\n  (no tasks yet)";
+                return Personality.listHeading() + "\n  (no tasks yet)";
             }
             return IntStream.range(0, tasks.size())
                     .mapToObj(index -> "\n" + (index + 1) + "." + tasks.get(index))
-                    .collect(Collectors.joining("", "Here are the tasks in your list:", ""));
+                    .collect(Collectors.joining("", Personality.listHeading(), ""));
         }
 
         if (command.equals("schedule") || command.startsWith("schedule ")) {
@@ -91,18 +91,18 @@ public class Aider {
             if (dateOrTime.isEmpty()) {
                 throw new AiderException("The schedule command needs a date or time.");
             }
-            return formatTasks("Schedule for " + dateOrTime + ":",
+            return formatTasks(Personality.scheduleHeading(dateOrTime),
                     tasks.scheduledOn(dateOrTime),
                     "no tasks scheduled for " + dateOrTime);
         }
 
         if (command.equals("find") || command.startsWith("find ")) {
-            return formatTasks("Here are the matching tasks:", tasks.find(command), "no matching tasks");
+            return formatTasks(Personality.findHeading(), tasks.find(command), "no matching tasks");
         }
 
         if (command.equals("on") || command.startsWith("on ")) {
             LocalDate date = parser.parseDate(command);
-            return formatTasks("Tasks on " + date + ":", tasks.occurringOn(date),
+            return formatTasks(Personality.dateHeading(date), tasks.occurringOn(date),
                     "no deadlines or events");
         }
 
@@ -110,23 +110,21 @@ public class Aider {
         String response;
         if (command.equals("mark") || command.startsWith("mark ")) {
             Task task = tasks.mark(command);
-            response = "Nice! I've marked this task as done:\n  " + task;
+            response = Personality.markedTask(task);
             changed = true;
         } else if (command.equals("unmark") || command.startsWith("unmark ")) {
             Task task = tasks.unmark(command);
-            response = "OK, I've marked this task as not done yet:\n  " + task;
+            response = Personality.unmarkedTask(task);
             changed = true;
         } else if (command.equals("delete") || command.startsWith("delete ")) {
             Task task = tasks.remove(tasks.indexOf(command, "delete"));
-            response = "Noted. I've removed this task:\n  " + task
-                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+            response = Personality.deletedTask(task, tasks.size());
             changed = true;
         } else {
             Task task = parser.parseTask(command);
             assert task != null : "Parsing a task command must return a task";
             tasks.add(task);
-            response = "Got it. I've added this task:\n  " + task
-                    + "\nNow you have " + tasks.size() + " tasks in the list.";
+            response = Personality.addedTask(task, tasks.size());
             changed = true;
         }
 

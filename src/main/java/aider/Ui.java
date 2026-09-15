@@ -31,8 +31,7 @@ public class Ui implements AutoCloseable {
     public void showWelcome() {
         System.out.println(SEPARATOR);
         System.out.println(BANNER);
-        System.out.println("Hello! I'm Aider.");
-        System.out.println("What can I do for you?");
+        System.out.println(Personality.welcomeMessage());
         System.out.println(SEPARATOR);
     }
 
@@ -50,7 +49,7 @@ public class Ui implements AutoCloseable {
 
     /** Shows the goodbye response. */
     public void showGoodbye() {
-        System.out.println("Bye. Hope to see you again soon!");
+        System.out.println(Personality.goodbyeMessage());
         System.out.println(SEPARATOR);
     }
 
