@@ -11,11 +11,18 @@ through a friendly command-line and desktop interface.
 Use Java 25 and run the desktop application with Gradle:
 
 ```text
-./gradlew run
+./gradlew run       # macOS/Linux
+gradlew.bat run     # Windows
 ```
 
 Type a command in the input box and press **Send**. Aider keeps your tasks in
 `data/aider.txt` so they are available the next time you launch the app.
+
+To run the packaged application instead, use:
+
+```text
+java -jar build/libs/aider.jar
+```
 
 ## Features
 
@@ -32,6 +39,9 @@ Add a deadline with a supported date or date-time:
 ```text
 deadline submit report /by 2026-09-18
 ```
+
+Supported date formats are `yyyy-MM-dd`, `yyyy-MM-dd HHmm`,
+`yyyy-MM-dd HH:mm`, and `d/M/yyyy HHmm`.
 
 Add an event with a start and end time:
 
@@ -65,13 +75,31 @@ View deadlines and events matching their original date or time text with:
 schedule 2026-09-18
 ```
 
-Use `on yyyy-MM-dd` to view deadlines and events occurring on a calendar date.
+Schedule searches are case-insensitive and use the date or time text entered
+when the task was created. Use `on yyyy-MM-dd` to view deadlines and events
+occurring on a calendar date.
+
+### Search and review
+
+Use these commands to review your tasks:
+
+```text
+list
+find <keyword>
+on <yyyy-MM-dd>
+schedule <date or time text>
+```
+
+Task numbers are assigned by their current order in `list`, starting from 1.
+The same number is used with `mark`, `unmark`, and `delete`.
 
 ### Helpful error handling
 
 Aider highlights errors in the desktop interface and reports them clearly in the
 console. It handles missing data files, malformed saved entries, invalid dates,
 repeated command markers, duplicate tasks, and unsafe storage paths gracefully.
+Leading, trailing, and repeated spaces are normalized when possible, while
+missing parameters and invalid dates receive a clear explanation.
 
 ## Exiting
 
