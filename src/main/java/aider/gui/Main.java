@@ -2,6 +2,7 @@ package aider.gui;
 
 import aider.Aider;
 import aider.AiderException;
+import aider.Personality;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,7 +32,7 @@ public final class Main extends javafx.application.Application {
     private final ScrollPane conversation = new ScrollPane(dialogContainer);
 
     /** Displays the current application status. */
-    private final Label statusLabel = new Label("Ready");
+    private final Label statusLabel = new Label("Ready when you are");
 
     /** Connects the GUI to the existing application logic. */
     private final Aider aider = new Aider("./data/duke.txt");
@@ -71,7 +72,7 @@ public final class Main extends javafx.application.Application {
 
         sendButton.setOnAction(event -> submitCommand());
         userInput.setOnAction(event -> submitCommand());
-        addAiderMessage("Hello! I'm Aider. What can I do for you?");
+        addAiderMessage(Personality.welcomeMessage());
 
         Scene scene = new Scene(layout, 620, 720);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
@@ -98,7 +99,7 @@ public final class Main extends javafx.application.Application {
             if (command.equals("bye")) {
                 sendButton.setDisable(true);
                 userInput.setDisable(true);
-                statusLabel.setText("Session ended");
+                statusLabel.setText("Session complete — nice work");
             }
         } catch (AiderException exception) {
             addErrorMessage("OOPS!!! " + exception.getMessage());
