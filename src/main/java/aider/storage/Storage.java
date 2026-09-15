@@ -129,7 +129,7 @@ public class Storage {
 
         File temp;
         try {
-            temp = File.createTempFile("duke-save", ".tmp",
+            temp = File.createTempFile("aider-save", ".tmp",
                     parent != null ? parent : new File(System.getProperty("user.dir")));
         } catch (IOException exception) {
             throw new AiderException("Could not create a temporary file for saving: "

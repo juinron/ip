@@ -25,7 +25,7 @@ class StorageTest {
 
     @Test
     void saveAndLoad_roundTripsTasks() throws Exception {
-        Storage storage = new Storage(temporaryDirectory.resolve("duke.txt").toString());
+        Storage storage = new Storage(temporaryDirectory.resolve("aider.txt").toString());
         Todo todo = new Todo("read book");
         todo.markAsDone();
         ArrayList<Task> tasks = new ArrayList<>(List.of(

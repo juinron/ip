@@ -11,7 +11,7 @@ import aider.storage.Storage;
 /** Coordinates the user interface, parser, task list, and storage. */
 public class Aider {
     /** Default path used when Aider is launched from the project root. */
-    private static final String DATA_FILE_PATH = "./data/duke.txt";
+    private static final String DATA_FILE_PATH = "./data/aider.txt";
 
     /** Persists tasks between application runs. */
     private final Storage storage;

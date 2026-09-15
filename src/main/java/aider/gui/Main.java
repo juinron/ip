@@ -35,7 +35,7 @@ public final class Main extends javafx.application.Application {
     private final Label statusLabel = new Label("Ready when you are");
 
     /** Connects the GUI to the existing application logic. */
-    private final Aider aider = new Aider("./data/duke.txt");
+    private final Aider aider = new Aider("./data/aider.txt");
 
     /** Builds and displays the application window. */
     @Override
