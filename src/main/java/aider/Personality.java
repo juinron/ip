@@ -17,7 +17,7 @@ public final class Personality {
 
     /** Returns Aider's goodbye message. */
     public static String goodbyeMessage() {
-        return "All done for now. Take care — I'll be here when you're ready!";
+        return "All done for now. Take care - I'll be here when you're ready!";
     }
 
     /** Returns the heading used when showing the complete task list. */
@@ -42,18 +42,18 @@ public final class Personality {
 
     /** Returns a warm response for a newly added task. */
     public static String addedTask(Task task, int count) {
-        return "Nice and steady — I've added this task:\n  " + task
+        return "Nice and steady - I've added this task:\n  " + task
                 + "\nYou now have " + count + " tasks in the list.";
     }
 
     /** Returns an encouraging response for a completed task. */
     public static String markedTask(Task task) {
-        return "Great progress — I've marked this task as done:\n  " + task;
+        return "Great progress - I've marked this task as done:\n  " + task;
     }
 
     /** Returns a reassuring response for an unmarked task. */
     public static String unmarkedTask(Task task) {
-        return "No pressure — I've marked this task as not done yet:\n  " + task;
+        return "No pressure - I've marked this task as not done yet:\n  " + task;
     }
 
     /** Returns a calm response for a deleted task. */

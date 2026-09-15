@@ -64,6 +64,14 @@ class TaskListTest {
         assertThrows(AiderException.class, () -> tasks.add(new Todo("read book")));
     }
 
+    @Test
+    void mark_rejectsMissingAndOutOfRangeTaskNumbers() throws Exception {
+        TaskList tasks = new TaskList();
+
+        assertThrows(AiderException.class, () -> tasks.mark("mark"));
+        assertThrows(AiderException.class, () -> tasks.mark("mark 1"));
+    }
+
     private static java.time.LocalDateTime dateTime(int year, int month, int day, int hour,
             int minute) {
         return java.time.LocalDateTime.of(year, month, day, hour, minute);
