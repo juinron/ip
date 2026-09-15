@@ -66,4 +66,14 @@ class ParserTest {
     void parseTask_rejectsBlankCommand() {
         assertThrows(AiderException.class, () -> parser.parseTask("   "));
     }
+
+    @Test
+    void parseTask_rejectsUnknownCommand() {
+        assertThrows(AiderException.class, () -> parser.parseTask("archive read book"));
+    }
+
+    @Test
+    void parseDate_rejectsInvalidDate() {
+        assertThrows(AiderException.class, () -> parser.parseDate("on 2026-02-30"));
+    }
 }

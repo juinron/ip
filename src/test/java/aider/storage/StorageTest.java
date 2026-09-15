@@ -57,4 +57,29 @@ class StorageTest {
 
         assertEquals(0, new Storage(file.toString()).load().size());
     }
+
+    @Test
+    void load_returnsEmptyListWhenFileDoesNotExist() throws Exception {
+        Path file = temporaryDirectory.resolve("missing.txt");
+
+        assertEquals(0, new Storage(file.toString()).load().size());
+    }
+
+    @Test
+    void load_keepsValidLinesWhenOneLineIsMalformed() throws Exception {
+        Path file = temporaryDirectory.resolve("mixed.txt");
+        Files.writeString(file, "not a task\nT | 0 | read book" + System.lineSeparator());
+
+        assertEquals(1, new Storage(file.toString()).load().size());
+    }
+
+    @Test
+    void save_acceptsNullAsAnEmptyTaskList() throws Exception {
+        Path file = temporaryDirectory.resolve("empty.txt");
+        Storage storage = new Storage(file.toString());
+
+        storage.save(null);
+
+        assertEquals("", Files.readString(file));
+    }
 }

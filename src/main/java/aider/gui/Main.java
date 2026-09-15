@@ -99,7 +99,7 @@ public final class Main extends javafx.application.Application {
             if (command.equals("bye")) {
                 sendButton.setDisable(true);
                 userInput.setDisable(true);
-                statusLabel.setText("Session complete — nice work");
+                statusLabel.setText("Session complete - nice work");
             }
         } catch (AiderException exception) {
             addErrorMessage("OOPS!!! " + exception.getMessage());
